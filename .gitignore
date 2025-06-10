@@ -1,0 +1,10 @@
+# Исключение папок VS, системных и временных файлов
+.vs/
+*.user
+*.suo
+*.vscode/
+node_modules/
+.env
+.DS_Store
+Thumbs.db
+*.log

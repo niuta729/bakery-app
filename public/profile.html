@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <meta charset="UTF-8">
+    <title>Личный кабинет</title>
+</head>
+<body>
+    <div class="container"
+    <h1>Личный кабинет</h1>
+    </div>
+    <p id="info"></p>
+    <button onclick="logout()">Выйти</button>
+
+    <script>
+        const username = localStorage.getItem('username');
+        if (!username) window.location.href = 'login.html';
+
+        document.getElementById('info').textContent = Вы вошли как: ${ username };
+
+        function logout() {
+            localStorage.removeItem('username');
+            localStorage.removeItem('cart');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
+<script>
+    // после document.getElementById('welcome').textContent = ...
+    fetch('http://localhost:5000/api/orders/my', {
+        headers: { Authorization: Bearer ${ token } }
+      })
+        .then(res => res.json())
+        .then(orders => {
+            const list = document.getElementById('orders');
+            list.innerHTML = '';
+            if (orders.length === 0) {
+                list.textContent = 'Нет заказов.';
+                return;
+            }
+
+            orders.forEach(order => {
+                const li = document.createElement('li');
+                li.textContent = Заказ на сумму ${ order.total } руб., товаров: ${ order.items.length }, дата: ${ new Date(order.createdAt).toLocaleString() };
+                list.appendChild(li);
+            });
+        })
+        .catch(() => {
+            document.getElementById('orders').textContent = 'Ошибка загрузки заказов.';
+        });
+</script>
+
+<script>
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+        alert('Вы не авторизованы');
+        window.location.href = 'login.html';
+    }
+
+    // Расшифровка токена (JWT) без сервера — не очень надёжно, но достаточно для локальной версии
+    function parseJwt(token) {
+        try {
+            return JSON.parse(atob(token.split('.')[1]));
+        } catch (e) {
+            return null;
+        }
+    }
+
+    const userData = parseJwt(token);
+    const username = userData ? userData.username : 'Неизвестно';
+
+    document.getElementById('welcome').textContent = Здравствуйте, ${ username } !;
+
+    function logout() {
+        localStorage.removeItem('token');
+        window.location.href = 'login.html';
+    }
+</script>
+</body>
+</html>

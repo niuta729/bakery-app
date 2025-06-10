@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="admin-container">
+        <h1>Админ-панель</h1>
+        <form id="addProductForm">
+            <input type="text" id="productName" placeholder="Название товара" required>
+            <input type="number" id="productPrice" placeholder="Цена" required>
+            <textarea id="productDescription" placeholder="Описание" required></textarea>
+            <button type="submit">Добавить товар</button>
+        </form>
+
+        <script>
+            document.getElementById('addProductForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const name = document.getElementById('productName').value;
+                const price = document.getElementById('productPrice').value;
+                const description = document.getElementById('productDescription').value;
+
+                const response = await fetch('/api/products', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, price, description })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert('Товар добавлен!');
+                    e.target.reset();
+                } else {
+                    alert('Ошибка: ' + result.message);
+                }
+            });
+        </script>
+
+        <h2>Список товаров</h2>
+        <ul id="product-list"></ul>
+    </div>
+
+    <script src="/js/admin.js"></script>
+</body>
+</html>
